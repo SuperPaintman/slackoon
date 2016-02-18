@@ -4,20 +4,13 @@
 import * as _ from 'lodash';
 import * as request from 'request-promise';
 
-const rp = request.defaults({
-  jar: true, // Сохранять куки
-  timeout: 5000, // Ждать ответа
-  headers: {
-    'User-Agent': "slackbot"
-  },
-  agentOptions: {
-    keepAlive: true
-  },
-  gzip: true // Сжимать ответ
-});
-
 interface JsonObject {
   [key: string]: (string | number | boolean | void | JsonObject[] | JsonObject);
+}
+
+interface SlackOpts {
+  token?: string;
+  requestDefaults?: any;
 }
 
 interface QueryOpts extends JsonObject {
@@ -36,14 +29,43 @@ interface SlackRequest extends JsonObject {
 }
 
 class Slackbot {
+  private _rp;
+  private _options;
+
   private token: string;
   private user: string;
   private team: string;
   private team_id: string;
   private user_id: string;
 
-  constructor(token: string) {
-    this.token = token;
+  constructor(token: string);
+  constructor(options: SlackOpts);
+  constructor(options: any) {
+    this._options = {
+      token: undefined,
+      requestDefaults: undefined
+    };
+
+    // Передан токен
+    if (_.isString(options)) {
+      this._options.token = options;
+    } else {
+      this._options = _.merge(this._options, options);
+    }
+
+    this.token = this._options.token;
+
+    this._rp = request.defaults(_.assign({
+      jar: true,     // Сохранять куки
+      timeout: 5000, // Ждать ответа
+      headers: {
+        'User-Agent': "slackbot"
+      },
+      agentOptions: {
+        keepAlive: true
+      },
+      gzip: true     // Сжимать ответ
+    }, this._options.requestDefaults));
   }
 
   /**
@@ -103,7 +125,7 @@ class Slackbot {
       token: this.token
     }, opts);
 
-    return rp({
+    return this._rp({
       uri: `https://slack.com/api/${method}`,
       qs: opts,
       json: true

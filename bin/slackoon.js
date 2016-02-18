@@ -16,20 +16,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promi
 /** Requires */
 var _ = require('lodash');
 var request = require('request-promise');
-const rp = request.defaults({
-    jar: true,
-    timeout: 5000,
-    headers: {
-        'User-Agent': "slackbot"
-    },
-    agentOptions: {
-        keepAlive: true
-    },
-    gzip: true // Сжимать ответ
-});
 class Slackbot {
-    constructor(token) {
-        this.token = token;
+    constructor(options) {
+        this._options = {
+            token: undefined,
+            requestDefaults: undefined
+        };
+        // Передан токен
+        if (_.isString(options)) {
+            this._options.token = options;
+        }
+        else {
+            this._options = _.merge(this._options, options);
+        }
+        this.token = this._options.token;
+        this._rp = request.defaults(_.assign({
+            jar: true,
+            timeout: 5000,
+            headers: {
+                'User-Agent': "slackbot"
+            },
+            agentOptions: {
+                keepAlive: true
+            },
+            gzip: true // Сжимать ответ
+        }, this._options.requestDefaults));
     }
     /**
      * Проверка кто пользователь по токену
@@ -85,7 +96,7 @@ class Slackbot {
         opts = _.merge({
             token: this.token
         }, opts);
-        return rp({
+        return this._rp({
             uri: `https://slack.com/api/${method}`,
             qs: opts,
             json: true
