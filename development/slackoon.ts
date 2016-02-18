@@ -16,15 +16,17 @@ const rp = request.defaults({
   gzip: true // Сжимать ответ
 });
 
-interface QueryOpts {
-  [key: string]: (string | number | boolean | any[] | {});
+interface JsonObject {
+  [key: string]: (string | number | boolean | void | JsonObject[] | JsonObject);
+}
+
+interface QueryOpts extends JsonObject {
   token?: string;
   user?: string;
   as_user?: boolean;
 }
 
-interface SlackRequest {
-  [key: string]: (string | number | boolean | any[] | {});
+interface SlackRequest extends JsonObject {
   ok?: boolean;
   user?: string;
   team?: string;
