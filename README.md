@@ -17,14 +17,112 @@ npm install slackoon --save
 --------------------------------------------------------------------------------
 
 ## Usage
+```js
+'use strict';
+const Slackoon = require('slackoon');
+
+const slackbot = new Slackoon('aaaa-000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaa'); //Your skack bot token
+
+slackbot.query('chat.postMessage', {
+  channel: "#general",
+  text: "Hello from *Slackoon*",
+  parse: "full"
+})
+.then((res) => {
+  console.log(res);
+});
+```
 
 --------------------------------------------------------------------------------
 
 ## API
+### Slackoon(options)
+**Arguments**
+* **options** {`Object|String`} - token or options object
+  * [**token**] {`String`}
+  * [**requestDefaults**] {`Object`}
+
+**Returns**
+* {`Slackoon`}
+
+**Example**
+
+```js
+'use strict';
+const Slackoon = require('slackoon');
+
+const slackbot = new Slackoon('aaaa-000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaa');
+// Or
+const secSlackbot = new Slackoon({
+  token: 'aaaa-000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaa',
+  requestDefaults: {
+    headers: {
+      'User-Agent': "slackbot 3000"
+    }
+  }
+}); 
+```
+
+
+### Slackoon#whoami(): Promise
+**Returns**
+* {`Promise`}
+
+**Example**
+
+```js
+'use strict';
+const Slackoon = require('slackoon');
+
+const slackbot = new Slackoon('aaaa-000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaa');
+
+slackbot.whoami()
+.then((res) => {
+  console.log(res);
+  /*
+  {
+    ok: true,
+    url: 'https://***.slack.com/',
+    team: '***',
+    user: '***',
+    team_id: '***',
+    user_id: '***'
+  }
+   */
+});
+```
+
+
+### Slackoon#query(method, options?): Promise
+**Arguments**
+* **method** {`String`}
+* [**options**] {`Object`}
+
+**Returns**
+* {`Promise`}
+
+**Example**
+
+```js
+'use strict';
+const Slackoon = require('slackoon');
+
+const slackbot = new Slackoon('aaaa-000000000000-aaaaaaaaaaaaaaaaaaaaaaaaaa');
+slackbot.query('chat.postMessage', {
+  channel: "#general",
+  text: "Hello from *Slackoon*",
+  parse: "full"
+})
+.then((res) => {
+  console.log(res);
+});
+```
 
 --------------------------------------------------------------------------------
 
 ## Changelog
+### 0.1.0 [`Stable`]
+* **Added**: first release
 
 --------------------------------------------------------------------------------
 

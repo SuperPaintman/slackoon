@@ -8,12 +8,12 @@ interface JsonObject {
   [key: string]: (string | number | boolean | void | JsonObject[] | JsonObject);
 }
 
-interface SlackOpts {
+interface SlackOptions {
   token?: string;
   requestDefaults?: any;
 }
 
-interface QueryOpts extends JsonObject {
+interface QueryOptions extends JsonObject {
   token?: string;
   user?: string;
   as_user?: boolean;
@@ -30,7 +30,7 @@ interface SlackRequest extends JsonObject {
 
 class Slackbot {
   private _rp;
-  private _options: SlackOpts;
+  private _options: SlackOptions;
 
   private token: string;
   private user: string;
@@ -39,7 +39,7 @@ class Slackbot {
   private user_id: string;
 
   constructor(token: string);
-  constructor(options: SlackOpts);
+  constructor(options: SlackOptions);
   constructor(options: any) {
     this._options = {
       token: undefined,
@@ -95,20 +95,20 @@ class Slackbot {
    * 
    * @return {Promise}
    */
-  async query(method: string, opts?: QueryOpts): Promise<SlackRequest> {
+  async query(method: string, options?: QueryOptions): Promise<SlackRequest> {
     // Если пользователь не авторизован, узнаем кто мы
-    if (!opts.user && !this.user) {
+    if (!options.user && !this.user) {
       await this.whoami();
     }
 
-    if (!opts.user) {
+    if (!options.user) {
       /*eslint-disable camelcase */
-      opts.user = this.user;
-      opts.as_user = true;
+      options.user = this.user;
+      options.as_user = true;
       /*eslint-enable camelcase */
     }
 
-    return this._query(method, opts);
+    return this._query(method, options);
   }
 
   /**
@@ -120,14 +120,14 @@ class Slackbot {
    *
    * @private
    */
-  private _query(method: string, opts?: QueryOpts): PromiseLike<SlackRequest> {
-    opts = _.merge({
+  private _query(method: string, options?: QueryOptions): PromiseLike<SlackRequest> {
+    options = _.merge({
       token: this.token
-    }, opts);
+    }, options);
 
     return this._rp({
       uri: `https://slack.com/api/${method}`,
-      qs: opts,
+      qs: options,
       json: true
     });
   }

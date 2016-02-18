@@ -69,18 +69,18 @@ class Slackbot {
      *
      * @return {Promise}
      */
-    query(method, opts) {
+    query(method, options) {
         return __awaiter(this, void 0, Promise, function* () {
             // Если пользователь не авторизован, узнаем кто мы
-            if (!opts.user && !this.user) {
+            if (!options.user && !this.user) {
                 yield this.whoami();
             }
-            if (!opts.user) {
+            if (!options.user) {
                 /*eslint-disable camelcase */
-                opts.user = this.user;
-                opts.as_user = true;
+                options.user = this.user;
+                options.as_user = true;
             }
-            return this._query(method, opts);
+            return this._query(method, options);
         });
     }
     /**
@@ -92,13 +92,13 @@ class Slackbot {
      *
      * @private
      */
-    _query(method, opts) {
-        opts = _.merge({
+    _query(method, options) {
+        options = _.merge({
             token: this.token
-        }, opts);
+        }, options);
         return this._rp({
             uri: `https://slack.com/api/${method}`,
-            qs: opts,
+            qs: options,
             json: true
         });
     }
