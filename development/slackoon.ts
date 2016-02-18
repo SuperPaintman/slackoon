@@ -30,7 +30,7 @@ interface SlackRequest extends JsonObject {
 
 class Slackbot {
   private _rp;
-  private _options;
+  private _options: SlackOpts;
 
   private token: string;
   private user: string;
