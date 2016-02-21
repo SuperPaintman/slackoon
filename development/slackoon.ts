@@ -75,7 +75,7 @@ class Slackbot {
   async whoami(): Promise<SlackRequest> {
     const result: SlackRequest = await this._query('auth.test');
 
-    if (result.ok) {
+    if (result.ok && !result.error) {
       /*eslint-disable camelcase */
       this.user = result.user;
       this.team = result.team;
@@ -108,7 +108,13 @@ class Slackbot {
       /*eslint-enable camelcase */
     }
 
-    return this._query(method, options);
+    const result = await this._query(method, options);
+
+    if (result.ok && !result.error) {
+      return result;
+    } else {
+      throw new Error(result.error);
+    }
   }
 
   /**

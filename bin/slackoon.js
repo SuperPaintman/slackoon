@@ -49,7 +49,7 @@ class Slackbot {
     whoami() {
         return __awaiter(this, void 0, Promise, function* () {
             const result = yield this._query('auth.test');
-            if (result.ok) {
+            if (result.ok && !result.error) {
                 /*eslint-disable camelcase */
                 this.user = result.user;
                 this.team = result.team;
@@ -80,7 +80,13 @@ class Slackbot {
                 options.user = this.user;
                 options.as_user = true;
             }
-            return this._query(method, options);
+            const result = yield this._query(method, options);
+            if (result.ok && !result.error) {
+                return result;
+            }
+            else {
+                throw new Error(result.error);
+            }
         });
     }
     /**
